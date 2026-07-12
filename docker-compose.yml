@@ -1,0 +1,12 @@
+services:
+  ecommerceDB:
+    image: postgres:17-alpine
+    restart: always
+    container_name: ecommerceDB
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ecommerce
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
