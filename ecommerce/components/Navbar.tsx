@@ -1,36 +1,36 @@
-// components/navbar.tsx
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaShoppingCart, FaBars } from 'react-icons/fa';
 import { useShoppingCartStore } from '@/store/providers/shopping-cart-store-provider';
 import { useHydrated } from '@/hooks/use-hydrated';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
   SheetTitle,
   SheetHeader,
 } from '@/components/ui/sheet';
 
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
-  { href: '/tienda', label: 'Tienda' },
+  { href: '/shop', label: 'Tienda' },
 ];
 
 export const Navbar = () => {
   const pathname = usePathname();
-  const products = useShoppingCartStore((state) => state.products);
+  const products = useShoppingCartStore((state) => state.products) || [];
   const hydrated = useHydrated();
+  const [open, setOpen] = useState(false);
 
   const totalItems = products.reduce((acc, p) => acc + p.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        {/* IZQUIERDA: Logo/Título */}
+        {/* IZQUIERDA: Logo */}
         <div className="flex-1 flex justify-start">
           <Link
             href="/"
@@ -40,7 +40,7 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        {/* CENTRO: Menú para Escritorio (Oculto en móvil) */}
+        {/* CENTRO: Desktop Menú */}
         <div className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map(({ href, label }) => {
             const isActive = pathname === href;
@@ -60,10 +60,10 @@ export const Navbar = () => {
           })}
         </div>
 
-        {/* DERECHA: Carrito + Trigger del Drawer Móvil */}
+        {/* DERECHA: Carrito + Drawer */}
         <div className="flex-1 flex items-center justify-end gap-2">
-          {/* Botón Carrito de compras */}
-          <Link href="/tienda/cart">
+          {/* Carrito */}
+          <Link href="/shop/cart">
             <Button variant="outline" size="icon" className="relative">
               <FaShoppingCart size={16} />
               {hydrated && totalItems > 0 && (
@@ -74,17 +74,22 @@ export const Navbar = () => {
             </Button>
           </Link>
 
-          {/* Drawer Móvil con Shadcn UI */}
+          {/* Drawer Móvil - controlado manualmente, sin SheetTrigger */}
           <div className="md:hidden">
-            <Sheet>
-              {/* SOLUCIÓN: Eliminamos 'asChild' y transformamos el Trigger directamente en tu botón */}
-              <SheetTrigger
-                className={buttonVariants({ variant: 'outline', size: 'icon' })}
-              >
-                <FaBars size={16} />
-              </SheetTrigger>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => setOpen(true)}
+            >
+              <FaBars size={16} />
+            </Button>
 
-              <SheetContent side="right" className="w-70 sm:w-87.5">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetContent
+                side="right"
+                className="w-70 sm:w-87.5 pointer-events-auto bg-white dark:bg-neutral-950 p-6"
+              >
                 <SheetHeader>
                   <SheetTitle className="text-left text-lg font-bold">
                     El Rincón de Evangelyn
@@ -98,6 +103,7 @@ export const Navbar = () => {
                       <Link
                         key={href}
                         href={href}
+                        onClick={() => setOpen(false)}
                         className={`rounded-md px-4 py-3 text-base font-medium transition-colors ${
                           isActive
                             ? 'bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-white'
