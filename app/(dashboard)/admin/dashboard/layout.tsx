@@ -8,11 +8,11 @@ import {
 } from '@/components/ui/sidebar';
 import { FaUserCircle } from 'react-icons/fa';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import LogoutButton from '@/dashboard/components/LogoutButton';
+import { createClient } from '@/supabase/libs/server';
+import LogoutButton from '@/admin/dashboard/components/LogoutButton';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import ActiveLink from '@/dashboard/components/ActiveLink';
+import ActiveLink from '@/admin/dashboard/components/ActiveLink';
 
 const dashboardRoute = [
   {
